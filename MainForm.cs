@@ -136,5 +136,31 @@ namespace SenseSys
             timer1.Stop();
             timer2.Stop();
         }
+
+        private void button_Add_Click(object sender, EventArgs e)
+        {
+            //read textbox_Input add to listbox_Contents
+            listBox_Contents.Items.Add(textBox_Input.Text);
+            //clear textbox_input text
+            textBox_Input.ResetText();
+        }
+
+        private void button_Delete_Click(object sender, EventArgs e)
+        {
+            //remove the current list item from listbox_Contents
+            if (listBox_Contents.SelectedIndex >= 0)
+                listBox_Contents.Items.RemoveAt(listBox_Contents.SelectedIndex);
+        }
+
+        private void listBox_Contents_DoubleClick(object sender, EventArgs e)
+        {
+            //double click and select the item so we can update it
+            if (listBox_Contents.SelectedIndex >= 0) 
+            {
+                //take the selected item and move it to the input text box
+                textBox_Input.Text = listBox_Contents.SelectedItem.ToString();
+                listBox_Contents.Items.RemoveAt(listBox_Contents.SelectedIndex);
+            }
+        }
     }
 }
