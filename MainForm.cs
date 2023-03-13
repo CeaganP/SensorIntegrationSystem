@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,6 +29,7 @@ namespace SenseSys
             ds = new DataStore();
             dataIn = new Queue<byte[]>();
             frameCount = 0;
+
 
             //#####REVIEW BEGIN#####
             /*
@@ -209,6 +211,9 @@ namespace SenseSys
 
                     serialPort1.PortName = portName;
                     serialPort1.BaudRate = baudRate;
+                    //TODOO: add more checks 
+                    //"System.IO.IOException: 'The semaphore timeout period has expired.
+                    //Tries to open serial port, but no devices connected, so it times out.
                     serialPort1.Open();
 
                     //port made connection, go to next port
@@ -219,5 +224,27 @@ namespace SenseSys
 
             return false;
         }
+
+        private void portUpdate_Click(object sender, EventArgs e)
+        {
+            //Clear existing ports from listbox 2, and update with lastest ports
+            string[] ports = GetPorts();
+            listBox2_Contents.Items.Clear();
+            listBox2_Contents.Items.AddRange(ports);
+        }
+        //FIXME: Selecting another Serial Port causes program to crash
+        private void listBox2_Contents_DoubleClick(object sender, EventArgs e)
+        {
+            string selectPort = listBox2_Contents.SelectedItem.ToString();
+            if (selectPort != null)
+            {
+                if (ConnectToPort(selectPort))
+                {
+                    System.Console.WriteLine("Connected to Port: " + selectPort);
+
+                }
+            }
+        }
     }
+    
 }
