@@ -42,10 +42,7 @@ namespace SenseSys
             //TODO: after populating COM ports, attach event for double clicking each line item
             //          upon double click begin reading the data from the COM port
             string[] ports = GetPorts();
-            for (int i = 0; i < ports.Length; i++)
-            {
-                listBox2_Contents.Items.Add(ports[i]);
-            }
+            listBox2_Contents.Items.AddRange(ports);
 
             //conditional checks without a boolean are implicitly 
             //  checking if the condition is equals to true,
@@ -213,6 +210,9 @@ namespace SenseSys
 
                     serialPort1.PortName = portName;
                     serialPort1.BaudRate = baudRate;
+                    //TODOO: add more checks 
+                    //"System.IO.IOException: 'The semaphore timeout period has expired.
+                    //Tries to open serial port, but no devices connected, so it times out.
                     serialPort1.Open();
 
                     //port made connection, go to next port
@@ -229,10 +229,7 @@ namespace SenseSys
             //Clear existing ports from listbox 2, and update with lastest ports
             string[] ports = GetPorts();
             listBox2_Contents.Items.Clear();
-            for (int i = 0; i < ports.Length; i++)
-            {
-                listBox2_Contents.Items.Add(ports[i]);
-            }
+            listBox2_Contents.Items.AddRange(ports);
         }
         //FIXME: Selecting another Serial Port causes program to crash
         private void listBox2_Contents_DoubleClick(object sender, EventArgs e)
