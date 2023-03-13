@@ -40,7 +40,9 @@ namespace SenseSys
             //TODO: after populating COM ports, attach event for double clicking each line item
             //          upon double click begin reading the data from the COM port
             string[] ports = GetPorts();
-            
+            //here is the string of ports 
+            //display the ports in the box
+            listBox_Contents.Items.AddRange(ports);
             //conditional checks without a boolean are implicitly 
             //  checking if the condition is equals to true,
             //  this also happens with numbers in some languages where, 0=false, 1=true
