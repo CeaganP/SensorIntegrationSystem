@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,6 +30,7 @@ namespace SenseSys
             dataIn = new Queue<byte[]>();
             frameCount = 0;
 
+
             //#####REVIEW BEGIN#####
             /*
             CONSIDERATIONS: 
@@ -40,7 +42,11 @@ namespace SenseSys
             //TODO: after populating COM ports, attach event for double clicking each line item
             //          upon double click begin reading the data from the COM port
             string[] ports = GetPorts();
-            
+            for (int i = 0; i < ports.Length; i++)
+            {
+                listBox2_Contents.Items.Add(ports[i]);
+            }
+
             //conditional checks without a boolean are implicitly 
             //  checking if the condition is equals to true,
             //  this also happens with numbers in some languages where, 0=false, 1=true
@@ -217,5 +223,30 @@ namespace SenseSys
 
             return false;
         }
+
+        private void portUpdate_Click(object sender, EventArgs e)
+        {
+            //Clear existing ports from listbox 2, and update with lastest ports
+            string[] ports = GetPorts();
+            listBox2_Contents.Items.Clear();
+            for (int i = 0; i < ports.Length; i++)
+            {
+                listBox2_Contents.Items.Add(ports[i]);
+            }
+        }
+        //FIXME: Selecting another Serial Port causes program to crash
+        private void listBox2_Contents_DoubleClick(object sender, EventArgs e)
+        {
+            string selectPort = listBox2_Contents.SelectedItem.ToString();
+            if (selectPort != null)
+            {
+                if (ConnectToPort(selectPort))
+                {
+                    System.Console.WriteLine("Connected to Port: " + selectPort);
+
+                }
+            }
+        }
     }
+    
 }
