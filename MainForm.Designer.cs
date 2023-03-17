@@ -37,7 +37,7 @@ namespace SenseSys
             this.button_Add = new System.Windows.Forms.Button();
             this.listBox_Contents = new System.Windows.Forms.ListBox();
             this.button_Delete = new System.Windows.Forms.Button();
-            this.listBox2_Contents = new System.Windows.Forms.ListBox();
+            this.listBox_Ports = new System.Windows.Forms.ListBox();
             this.portUpdate = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
@@ -89,14 +89,14 @@ namespace SenseSys
             this.button_Delete.UseVisualStyleBackColor = true;
             this.button_Delete.Click += new System.EventHandler(this.button_Delete_Click);
             // 
-            // listBox2_Contents
+            // listBox_Ports
             // 
-            this.listBox2_Contents.FormattingEnabled = true;
-            this.listBox2_Contents.Location = new System.Drawing.Point(367, 90);
-            this.listBox2_Contents.Name = "listBox2_Contents";
-            this.listBox2_Contents.Size = new System.Drawing.Size(120, 95);
-            this.listBox2_Contents.TabIndex = 5;
-            this.listBox2_Contents.DoubleClick += new System.EventHandler(this.listBox2_Contents_DoubleClick);
+            this.listBox_Ports.FormattingEnabled = true;
+            this.listBox_Ports.Location = new System.Drawing.Point(367, 90);
+            this.listBox_Ports.Name = "listBox_Ports";
+            this.listBox_Ports.Size = new System.Drawing.Size(120, 95);
+            this.listBox_Ports.TabIndex = 5;
+            this.listBox_Ports.DoubleClick += new System.EventHandler(this.listBo_Ports_Contents_DoubleClick);
             // 
             // portUpdate
             // 
@@ -114,7 +114,7 @@ namespace SenseSys
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.portUpdate);
-            this.Controls.Add(this.listBox2_Contents);
+            this.Controls.Add(this.listBox_Ports);
             this.Controls.Add(this.button_Delete);
             this.Controls.Add(this.listBox_Contents);
             this.Controls.Add(this.button_Add);
@@ -136,7 +136,7 @@ namespace SenseSys
         private System.Windows.Forms.Button button_Add;
         private System.Windows.Forms.ListBox listBox_Contents;
         private System.Windows.Forms.Button button_Delete;
-        private System.Windows.Forms.ListBox listBox2_Contents;
+        private System.Windows.Forms.ListBox listBox_Ports;
         private System.Windows.Forms.Button portUpdate;
     }
 }

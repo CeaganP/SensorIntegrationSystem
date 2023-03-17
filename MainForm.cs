@@ -30,25 +30,15 @@ namespace SenseSys
             dataIn = new Queue<byte[]>();
             frameCount = 0;
 
-
-            //#####REVIEW BEGIN#####
             /*
             CONSIDERATIONS: 
-                What other UI elements do I want? 
+                What other UI elements does a user want? 
                 How do I know what COM port I am reading from?
                 Can I see the data being read from it?
              */
-            //TODO: populate list box with COM ports
-            //TODO: after populating COM ports, attach event for double clicking each line item
-            //          upon double click begin reading the data from the COM port
-            string[] ports = GetPorts();
-            //here is the string of ports 
-            //display the ports in the box
-            listBox_Contents.Items.AddRange(ports);
-            //conditional checks without a boolean are implicitly 
-            //  checking if the condition is equals to true,
-            //  this also happens with numbers in some languages where, 0=false, 1=true
-            if (ConnectToPort(ports[0])) //ConnectToPort(ports[0])==true
+
+            string[] ports = RefreshListBoxPorts(); //update the UI then grab the port list
+            if (ports.Length > 0 && ConnectToPort(ports[0])) //length is valid so connect to first port
             {
                 System.Console.WriteLine("Connected to port: " + ports[0]); //$"Connected to port: {ports[0]}"
             }
@@ -56,11 +46,28 @@ namespace SenseSys
             //byte[] data = new byte[20];
             List<byte[]> data = new List<byte[]>();
 
-            //#####REVIEW END#####            
 
             //TODO: optimize each timer for their purpose, more may need to be added
-            //timer1.Start();
+            timer1.Interval = 100; //10 times a second
+            timer1.Start();
             //timer2.Start();
+        }
+
+        /// <summary>
+        /// Update the UI then return the ports as an array, clear listbox_ports each call
+        /// </summary>
+        /// <returns>string[] port array</returns>
+        public string[] RefreshListBoxPorts() 
+        {
+            //TODO: populate list box with COM ports
+            //TODO: after populating COM ports, attach event for double clicking each line item
+            //          upon double click begin reading the data from the COM port
+            string[] ports = GetPorts();
+            //here is the string of ports 
+            //display the ports in the box
+            listBox_Ports.Items.Clear(); //prevent duplicate entries
+            listBox_Ports.Items.AddRange(ports);
+            return ports;
         }
 
         /// <summary>
@@ -84,8 +91,9 @@ namespace SenseSys
                 }
             }
 
-            //TODO: check on a cycle if ports are open, remove port1IsOpen clause
-            if (frameCount % 100 == 0 && !serialPort1.IsOpen) 
+            //TODO: old code, perhaps clean up?
+            #region JUNKDELETE
+            /*if (frameCount % 100 == 0 && !serialPort1.IsOpen) 
             {
                 //TODO: allow for many serial ports to be connected to at once if available -- requires refactor of serial ports
                 //query serial ports available
@@ -99,16 +107,13 @@ namespace SenseSys
                     }
                 }
             }
+            */
+            #endregion
 
-            //update UI here
-            if (frameCount % 10 == 0) 
+            //update UI here once every 0.5 seconds
+            if (frameCount % 5 == 0) 
             {
-                Label tester = new Label();
-                tester.Text = frameCount.ToString();
-                tester.Location = new Point(frameCount % 37, frameCount % 117);
-                tester.BringToFront();
-                
-                MainForm.ActiveForm.Controls.Add(tester);
+                RefreshListBoxPorts();
             }
             frameCount++;
         }
@@ -229,19 +234,25 @@ namespace SenseSys
         {
             //Clear existing ports from listbox 2, and update with lastest ports
             string[] ports = GetPorts();
-            listBox2_Contents.Items.Clear();
-            listBox2_Contents.Items.AddRange(ports);
+            listBox_Ports.Items.Clear();
+            listBox_Ports.Items.AddRange(ports);
         }
-        //FIXME: Selecting another Serial Port causes program to crash
-        private void listBox2_Contents_DoubleClick(object sender, EventArgs e)
-        {
-            string selectPort = listBox2_Contents.SelectedItem.ToString();
-            if (selectPort != null)
-            {
-                if (ConnectToPort(selectPort))
-                {
-                    System.Console.WriteLine("Connected to Port: " + selectPort);
 
+        //FIXME: Selecting another Serial Port causes program to crash
+        private void listBo_Ports_Contents_DoubleClick(object sender, EventArgs e)
+        {
+            if (sender is ListBox lb) 
+            {
+                if (lb.SelectedIndex < 0) //prevent null entries, no selected index = -1
+                    return;
+                lb
+                string selectPort = lb.SelectedItem.ToString();
+                if (selectPort != null)
+                {
+                    if (ConnectToPort(selectPort))
+                    {
+                        System.Console.WriteLine("Connected to Port: " + selectPort);
+                    }
                 }
             }
         }
