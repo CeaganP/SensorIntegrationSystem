@@ -35,7 +35,19 @@ namespace SenseSys
                 What other UI elements does a user want? 
                 How do I know what COM port I am reading from?
                 Can I see the data being read from it?
+            
+             Ideas:             Add your own if you come up with them!
+                [X] View ports 
+                [X] Connect port(s)
+                    Read data
+                    Write data
+                    Store data
+                    Create Graphical User Interface (GUI)
+                    Connect GUI to core methods
+
              */
+
+
 
             string[] ports = RefreshListBoxPorts(); //update the UI then grab the port list
             if (ports.Length > 0 && ConnectToPort(ports[0])) //length is valid so connect to first port
