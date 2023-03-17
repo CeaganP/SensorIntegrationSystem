@@ -243,9 +243,7 @@ namespace SenseSys
         {
             if (sender is ListBox lb) 
             {
-                if (lb.SelectedIndex < 0) //prevent null entries, no selected index = -1
-                    return;
-                lb
+                if (lb.SelectedIndex < 0) { return; } //prevent null entries, no selected index = -1
                 string selectPort = lb.SelectedItem.ToString();
                 if (selectPort != null)
                 {
