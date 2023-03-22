@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Text;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,8 +16,8 @@ namespace SenseSys
     {
         //https://www.codeproject.com/Articles/678025/Serial-Comms-in-Csharp-for-Beginners#:~:text=The%20standard%20baud%20rate%20for,connecting%20to%20embedded%20processors%20%26%20microcontrollers.
         /*The standard baud rate for connections is 9600 (the default for the serial port class) the lower baud rates 600 & 300 are for connecting to embedded processors & microcontrollers*/
-        readonly int[] BAUD_RATES_FIRST = { 300, 600, 9600 }; //if these fail test the rest        
-        readonly int[] BAUD_RATES_SECOND = { 110, 1200, 2400, 4800, 14400, 19200, 38400, 57600, 115200 }; //, 128000, 256000 }; //most devices don't support over 115200
+        readonly int[] BAUD_RATES_FIRST = { 9600, 600, 300 }; //if these fail test the rest        
+        readonly int[] BAUD_RATES_SECOND = { 115200, 57600, 38400, 19200, 14400, 4800, 2400, 1200, 110 }; //, 128000, 256000 }; //most devices don't support over 115200
 
         DataStore ds;
         int frameCount;
@@ -48,6 +49,7 @@ namespace SenseSys
              */
 
 
+            serialPort1.ReadTimeout = 500;
 
             string[] ports = RefreshListBoxPorts(); //update the UI then grab the port list
             if (ports.Length > 0 && ConnectToPort(ports[0])) //length is valid so connect to first port
@@ -82,6 +84,27 @@ namespace SenseSys
             return ports;
         }
 
+        private void WriteDataToFile(byte[] data, string fileName = "dataCollected.txt") 
+        {
+            FileInfo fi = new FileInfo(fileName);
+            if (!fi.Exists) File.Create(fileName).Close();
+            File.AppendAllText(fileName, Convert.ToBase64String(data));
+
+            /*FileStream fs;
+            Encoding writerEncoding = new UTF8Encoding();
+            TextWriter tw = new StreamWriter(fs, writerEncoding);
+            tw.Write(dataBytes);
+            tw.Close();
+            fs.Close();*/
+        }
+
+        private string ReadDataFromFile(string fileName = "dataCollected.txt")
+        {
+            FileInfo fi = new FileInfo(fileName);
+            if (fi.Exists) return File.ReadAllText(fileName);
+            return "";
+        }
+
         /// <summary>
         /// Validate data states, ensure devices are still connected
         /// </summary>
@@ -94,12 +117,15 @@ namespace SenseSys
             {
                 if (ds.dataQueue.Any()) 
                 {
-                    double[] dataDouble = ds.dataQueue.Dequeue();
+                    double[] dataDoubles = ds.dataQueue.Dequeue();
                 }
 
                 if (dataIn.Any()) 
                 {
-                    byte[] dataByte = dataIn.Dequeue();
+                    byte[] dataBytes = dataIn.Dequeue();
+                    string strBytes = string.Join("", dataBytes);
+                    richTextBox_Data.Text = strBytes + "\t" + richTextBox_Data.Text;
+                    WriteDataToFile(dataBytes);
                 }
             }
 
@@ -231,14 +257,26 @@ namespace SenseSys
                     //TODOO: add more checks 
                     //"System.IO.IOException: 'The semaphore timeout period has expired.
                     //Tries to open serial port, but no devices connected, so it times out.
-                    serialPort1.Open();
+                    try
+                    {
+                        serialPort1.Open();
+                    }
+                    catch (System.IO.IOException timeout) 
+                    {
+                        label_Log.Text = "Connection timed out " + portName + " " + baudRate;
+                        return false;
+                    }
 
                     //port made connection, go to next port
-                    if (serialPort1.IsOpen)
+                    if (serialPort1.IsOpen) 
+                    {
+                        label_Log.Text = "Connected to port " + portName + " " + baudRate;
                         return true;
+                    }
                 }
             }
-
+            
+            label_Log.Text = "Failed to connect to port " + portName;
             return false;
         }
 

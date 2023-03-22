@@ -39,6 +39,9 @@ namespace SenseSys
             this.button_Delete = new System.Windows.Forms.Button();
             this.listBox_Ports = new System.Windows.Forms.ListBox();
             this.portUpdate = new System.Windows.Forms.Button();
+            this.richTextBox_Data = new System.Windows.Forms.RichTextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label_Log = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // timer1
@@ -108,11 +111,38 @@ namespace SenseSys
             this.portUpdate.UseVisualStyleBackColor = true;
             this.portUpdate.Click += new System.EventHandler(this.portUpdate_Click);
             // 
+            // richTextBox_Data
+            // 
+            this.richTextBox_Data.Location = new System.Drawing.Point(56, 221);
+            this.richTextBox_Data.Name = "richTextBox_Data";
+            this.richTextBox_Data.Size = new System.Drawing.Size(732, 217);
+            this.richTextBox_Data.TabIndex = 7;
+            this.richTextBox_Data.Text = "";
+            // 
+            // label1
+            // 
+            this.label1.Location = new System.Drawing.Point(53, 9);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(51, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Console:";
+            // 
+            // label_Log
+            // 
+            this.label_Log.Location = new System.Drawing.Point(98, 9);
+            this.label_Log.Name = "label_Log";
+            this.label_Log.Size = new System.Drawing.Size(437, 13);
+            this.label_Log.TabIndex = 8;
+            this.label_Log.Text = "label1";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.label_Log);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.richTextBox_Data);
             this.Controls.Add(this.portUpdate);
             this.Controls.Add(this.listBox_Ports);
             this.Controls.Add(this.button_Delete);
@@ -138,6 +168,9 @@ namespace SenseSys
         private System.Windows.Forms.Button button_Delete;
         private System.Windows.Forms.ListBox listBox_Ports;
         private System.Windows.Forms.Button portUpdate;
+        private System.Windows.Forms.RichTextBox richTextBox_Data;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label_Log;
     }
 }
 
