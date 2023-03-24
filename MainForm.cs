@@ -304,6 +304,17 @@ namespace SenseSys
                 }
             }
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            string[] ports = GetPorts();
+            ConnectToPort(ports[0]);
+        }
+
+        private void listBox_Ports_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
     
 }
