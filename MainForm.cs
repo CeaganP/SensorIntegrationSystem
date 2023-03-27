@@ -73,14 +73,23 @@ namespace SenseSys
         /// <returns>string[] port array</returns>
         public string[] RefreshListBoxPorts() 
         {
-            //TODO: populate list box with COM ports
-            //TODO: after populating COM ports, attach event for double clicking each line item
-            //          upon double click begin reading the data from the COM port
             string[] ports = GetPorts();
-            //here is the string of ports 
+            bool valid = ports.Length == listBox_Ports.Items.Count;
+
             //display the ports in the box
-            listBox_Ports.Items.Clear(); //prevent duplicate entries
-            listBox_Ports.Items.AddRange(ports);
+            //  clear potential duplicate entries
+            for (int i = 0; i < ports.Length && valid; i++) 
+            {
+                valid = ports[i].Equals(listBox_Ports.Items[i]);
+                if (!valid) break;
+            }
+            
+            //if they don't align, reset box and skip checking remaining entries
+            if (!valid) 
+            {
+                listBox_Ports.Items.Clear();
+                listBox_Ports.Items.AddRange(ports);
+            }
             return ports;
         }
 
