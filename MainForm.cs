@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -21,14 +22,14 @@ namespace SenseSys
 
         DataStore ds;
         int frameCount;
-        Queue<byte[]> dataIn;
+        ConcurrentQueue<object> dataIn;
 
         public MainForm()
         {
             InitializeComponent();
 
             ds = new DataStore();
-            dataIn = new Queue<byte[]>();
+            dataIn = new ConcurrentQueue<object>();
             frameCount = 0;
 
             /*
@@ -93,11 +94,13 @@ namespace SenseSys
             return ports;
         }
 
-        private void WriteDataToFile(byte[] data, string fileName = "dataCollected.txt") 
+        private void WriteDataToFile(object data, string fileName = "dataCollected.txt") 
         {
             FileInfo fi = new FileInfo(fileName);
             if (!fi.Exists) File.Create(fileName).Close();
-            File.AppendAllText(fileName, Convert.ToBase64String(data));
+            //case for the data type
+            if (data is byte[] dataBytes)
+                File.AppendAllText(fileName, Convert.ToBase64String(dataBytes));
 
             /*FileStream fs;
             Encoding writerEncoding = new UTF8Encoding();
@@ -119,7 +122,7 @@ namespace SenseSys
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void timer1_Tick(object sender, EventArgs e)
+        private async void timer1_Tick(object sender, EventArgs e)
         {
             //process available cached data
             while (dataIn.Any() || ds.dataQueue.Any()) 
@@ -129,12 +132,22 @@ namespace SenseSys
                     double[] dataDoubles = ds.dataQueue.Dequeue();
                 }
 
-                if (dataIn.Any()) 
+                if (dataIn.Any())
                 {
-                    byte[] dataBytes = dataIn.Dequeue();
-                    string strBytes = string.Join("", dataBytes);
+                    dataIn.TryDequeue(out object data);
+                    string strBytes = "";
+                    if (data is byte[] dataBytes)
+                    {
+                        strBytes = string.Join("", dataBytes);
+                        WriteDataToFile(dataBytes);
+                    }
+                    if (data is float[] dataFloat)
+                    {
+                        strBytes = string.Join("", dataFloat);
+                        WriteDataToFile(dataFloat);
+                    }
+
                     richTextBox_Data.Text = strBytes + "\t" + richTextBox_Data.Text;
-                    WriteDataToFile(dataBytes);
                 }
             }
 
@@ -187,15 +200,24 @@ namespace SenseSys
             //takes all the bytes available in the serial port and copies them to shallow array
             byte[] dataToRead = new byte[dataSize];
             serialPort1.Read(dataToRead, offset, dataSize);
-            dataIn.Enqueue(dataToRead);
+            
+            //for is our divisor due to the bytes in each float
+            float[] dataFloats = new float[dataSize / 4]; //define size not initial contents
+            for (int i = 0; i < dataSize; i += 4) 
+            {
+                //take 0000 > 0.f
+                float value = BitConverter.ToSingle(dataToRead, i);
+                dataFloats[i / 4] = value;
+            }
+
+            dataIn.Enqueue(dataFloats.ToString());
             Console.WriteLine(dataSize);
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             //TODO: close all additional processes, clean up before exiting application
-            if (serialPort1.IsOpen)
-                serialPort1.Close();
+            DisconnectFromPort();
 
             timer1.Stop();
             timer2.Stop();
@@ -258,8 +280,7 @@ namespace SenseSys
                 //pick port(s) to connect to
                 if (portName.Length > 0)
                 {
-                    if (serialPort1.IsOpen)
-                        serialPort1.Close();
+                    DisconnectFromPort();
 
                     serialPort1.PortName = portName;
                     serialPort1.BaudRate = baudRate;
@@ -288,6 +309,14 @@ namespace SenseSys
             label_Log.Text = "Failed to connect to port " + portName;
             return false;
         }
+
+        public void DisconnectFromPort() 
+        {
+            //TODO: use indexing if many ports exist
+            if (serialPort1.IsOpen)
+                serialPort1.Close();
+        }
+
 
         private void portUpdate_Click(object sender, EventArgs e)
         {
@@ -318,11 +347,17 @@ namespace SenseSys
         {
             string[] ports = GetPorts();
             ConnectToPort(ports[0]);
+            groupBox1.Controls.Add(new PortBox());
         }
 
         private void listBox_Ports_SelectedIndexChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void button_Disconnect_Click(object sender, EventArgs e)
+        {
+            DisconnectFromPort();
         }
     }
     
